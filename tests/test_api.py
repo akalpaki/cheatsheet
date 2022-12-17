@@ -33,3 +33,12 @@ def test_edit_sheet(client):
     assert output['body'] == 'test123'
     assert output['created'] == 'now'
 
+
+def test_delete_sheet(client):
+    response = client.delete(
+        "/1/",
+        content_type='application/json'
+    )
+    assert response.status_code == 204
+
+

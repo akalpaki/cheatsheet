@@ -47,6 +47,11 @@ def create_app(test_config=None):
         b = jsonify(changing_sheet[0])
         return b
 
+    @app.route("/<int:sheet_id>/", methods=['DELETE'])
+    def delete_sheet(sheet_id):
+        del cheat_list[0][f"{sheet_id}"]
+        return cheat_list
+
     return app
 
 
