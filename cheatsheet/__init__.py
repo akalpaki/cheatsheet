@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, make_response
+from flask import Flask, jsonify, make_response, request
 
 cheat_list = [
     {
@@ -37,6 +37,15 @@ def create_app(test_config=None):
         response = make_response(a)
         response.headers["Content-Type"] = 'application/json; charset=utf-8'
         return response
+
+    @app.route("/<int:sheet_id>/", methods=['PUT'])
+    def update_sheet(sheet_id):
+        changing_sheet = [sheet for sheet in cheat_list if sheet["id"] == sheet_id]
+        changing_sheet[0]['author'] = request.json.get('author', changing_sheet[0]['author'])
+        changing_sheet[0]['body'] = request.json.get('body', changing_sheet[0]['body'])
+        changing_sheet[0]['created'] = request.json.get('created', changing_sheet[0]['created'])
+        b = jsonify(changing_sheet[0])
+        return b
 
     return app
 
