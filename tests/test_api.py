@@ -34,7 +34,25 @@ def test_edit_sheet(client):
     assert output['created'] == 'now'
 
 
+def test_create_sheet(client):
+    data = json.dumps({
+        'author': 'create_test',
+        'body': 'creating a test entry',
+        'created': 'now'
+    })
+    response = client.post(
+        '/',
+        data=data,
+        content_type='application/json'
+    )
+    output = json.loads(response.get_data(as_text=True))
+    print(output)
+    assert response.status_code == 201
+    assert len(output) != 0
+
+
 def test_delete_sheet(client):
+    # Find a way to assert that the object has actually been deleted.
     response = client.delete(
         "/1/",
         content_type='application/json'

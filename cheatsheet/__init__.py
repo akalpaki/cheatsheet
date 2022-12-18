@@ -26,9 +26,21 @@ def create_app(test_config=None):
         app.config.from_mapping(test_config)
 
     @app.route("/")
-    def hello():
+    def frontpage():
         output = [sheet for sheet in cheat_list]
         return jsonify(output)
+
+    @app.route('/', methods=['POST'])
+    def create_sheet():
+        construct_new_entry = dict()
+        construct_new_entry.update({"id": len(cheat_list)})
+        construct_new_entry.update({
+            'author': request.json.get('author'),
+            'body': request.json.get('body'),
+            'created': request.json.get('created'),
+        })
+        cheat_list.append(construct_new_entry)
+        return cheat_list, 201
 
     @app.route("/<int:sheet_id>/", methods=['GET'])
     def get_sheet(sheet_id):
@@ -37,10 +49,6 @@ def create_app(test_config=None):
         response = make_response(a)
         response.headers["Content-Type"] = 'application/json; charset=utf-8'
         return response
-
-    @app.route('/<int:sheet_id>/', methods=['POST'])
-    def create_sheet(sheet)id:
-
 
     @app.route("/<int:sheet_id>/", methods=['PUT'])
     def update_sheet(sheet_id):
@@ -53,7 +61,7 @@ def create_app(test_config=None):
 
     @app.route("/<int:sheet_id>/", methods=['DELETE'])
     def delete_sheet(sheet_id):
-        cheat_list.pop(sheet_id-1)
+        cheat_list.pop(sheet_id - 1)
         return cheat_list, 204
 
     return app
