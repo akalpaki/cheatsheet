@@ -10,7 +10,7 @@ cheat_list = [
     {
         "id": 2,
         "author": "Alex",
-        "body": "This is also a standin for a cheat sheet.",
+        "body": "This is also a stand in for a cheat sheet.",
         "created": "2 days ago"
     }
 ]
@@ -21,7 +21,7 @@ def create_app(test_config=None):
 
     if test_config is None:
         pass
-        #app.config.from_pyfile('config.py', silent=True)
+        # app.config.from_pyfile('config.py', silent=True)
     else:
         app.config.from_mapping(test_config)
 
@@ -38,6 +38,10 @@ def create_app(test_config=None):
         response.headers["Content-Type"] = 'application/json; charset=utf-8'
         return response
 
+    @app.route('/<int:sheet_id>/', methods=['POST'])
+    def create_sheet(sheet)id:
+
+
     @app.route("/<int:sheet_id>/", methods=['PUT'])
     def update_sheet(sheet_id):
         changing_sheet = [sheet for sheet in cheat_list if sheet["id"] == sheet_id]
@@ -49,8 +53,8 @@ def create_app(test_config=None):
 
     @app.route("/<int:sheet_id>/", methods=['DELETE'])
     def delete_sheet(sheet_id):
-        del cheat_list[0][f"{sheet_id}"]
-        return cheat_list
+        cheat_list.pop(sheet_id-1)
+        return cheat_list, 204
 
     return app
 
@@ -58,4 +62,3 @@ def create_app(test_config=None):
 if __name__ == "__main__":
     app = create_app()
     app.run(debug=True)
-
