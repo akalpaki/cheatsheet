@@ -12,5 +12,5 @@ This is going to be a simple cheat-sheet creator. The current design goals for t
 
 ____________________
 
-This app is being created in the process of me learning how to program using `Python`. If you do happen to stumble across this and you're horrified by my terrible code, I humbly apologize and suggest using this [eyebleach](https://www.youtube.com/watch?v=Tcx6YyXvvRI).
+This app is being created in the process of me learning how to program using `Python` and `Flask`. If you do happen to stumble across this and you're horrified by my terrible code, I humbly apologize and suggest using this [eyebleach](https://www.youtube.com/watch?v=Tcx6YyXvvRI).
 
