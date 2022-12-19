@@ -35,6 +35,8 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    # Move the routes to a "Routes" module
+    # Point of routes: strip the data from the request, pass it to business layer.
     @app.route("/")
     def frontpage():
         output = [sheet for sheet in cheat_list]
@@ -62,6 +64,8 @@ def create_app(test_config=None):
 
     @app.route("/<int:sheet_id>/", methods=['PUT'])
     def update_sheet(sheet_id):
+        # author = request.json.get('author')
+        # logic.update_sheet(sheet_id, author, body, created)
         changing_sheet = [sheet for sheet in cheat_list if sheet["id"] == sheet_id]
         changing_sheet[0]['author'] = request.json.get('author', changing_sheet[0]['author'])
         changing_sheet[0]['body'] = request.json.get('body', changing_sheet[0]['body'])
