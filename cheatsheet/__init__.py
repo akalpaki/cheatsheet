@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, jsonify, make_response, request
 
 cheat_list = [
@@ -17,20 +19,28 @@ cheat_list = [
 
 
 def create_app(test_config=None):
-    app = Flask(__name__)
+    app = Flask(__name__, instance_relative_config=True)
 
     if test_config is None:
-        pass
-        # app.config.from_pyfile('config.py', silent=True)
+        app.config.from_mapping(
+            SECRET_KEY='dev',
+            DATABASE=os.path.join(app.instance_path, 'cheatsheet.sqlite')
+        )
     else:
         app.config.from_mapping(test_config)
+
+    # This ensures the instance folder exists.
+    try:
+        os.makedirs(app.instance_path)
+    except OSError:
+        pass
 
     @app.route("/")
     def frontpage():
         output = [sheet for sheet in cheat_list]
         return jsonify(output)
 
-    @app.route('/', methods=['POST'])
+    @app.route("/", methods=['POST'])
     def create_sheet():
         construct_new_entry = dict()
         construct_new_entry.update({"id": len(cheat_list)})
@@ -63,6 +73,9 @@ def create_app(test_config=None):
     def delete_sheet(sheet_id):
         cheat_list.pop(sheet_id - 1)
         return cheat_list, 204
+
+    from . import db
+    db.init_app(app)
 
     return app
 
