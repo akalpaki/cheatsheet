@@ -4,30 +4,51 @@ from cheatsheet.db import get_db
 class CheatSheet:
     """The model class for cheat-sheets"""
 
-    def __init__(self, sheet_id, author, title, body, created):
+    def __init__(self, sheet_id, author, title, body):
         self.id = sheet_id
         self.author = author
         self.title = title
         self.body = body
-        self.created = created  # created needs to be a datetime object
+
+    def to_json(self):
+        return self.__dict__
 
 
-class GetCheatSheet(CheatSheet):
-    """Class which contains GET method functionality."""
+class CheatSheetManager:
+    """Class containing the tools to use CheatSheet."""
 
-    def get(self) -> tuple[dict, int]:
+    @staticmethod
+    def get(sheet_id):
         db = get_db()
-        request_data = db.execute('SELECT * FROM cheat_sheet WHERE id = ? ',
-                                  (CheatSheet.id,)).fetchone()
-        return dict(request_data=request_data, message="Success"), 200
+        query_result = db.execute("SELECT * FROM cheat_sheet WHERE id = (?)",
+                                  (sheet_id,)).fetchone()
+        return query_result, 200
 
-
-class PutCheatSheet(CheatSheet):
-    """Class which contains PUT method functionality."""
-    def put(self, sheet_id, author, title, body, created):
+    @staticmethod
+    def create(author, title, body):
         db = get_db()
-        request_data = CheatSheet(sheet_id, author, title, body, created)
-        new_db_entry = db.execute('INSERT INTO cheat_sheet VALUES (?, ?, ?, ?, ?)',
-                                  (request_data,))
-        return dict(id=new_db_entry.id, message="Cheat-sheet added"), 202
+        curr = db.cursor()
+        curr.execute(
+            "INSERT INTO cheat_sheet (author, title, body)"
+            "VALUES (?, ?, ?)",
+            (author, title, body)
+        )
+        db.commit()
+        sheet_id = curr.lastrowid
+        data = CheatSheet(sheet_id, author, title, body)
+        return data
 
+
+    @staticmethod
+    def put(sheet_id, title, body):
+        get_db().execute("UPDATE cheat_sheet SET title = ?, body = ?"
+                         "WHERE id = ?",
+                         (title, body, sheet_id)
+        )
+        get_db().commit()
+        return dict(id=sheet_id, message="Cheat-sheet updated!"), 200
+
+    @staticmethod
+    def delete(sheet_id):
+        get_db().execute("DELETE FROM cheat_sheet WHERE id = ?", (sheet_id,))
+        return dict(message="Cheat-sheet deleted."), 204

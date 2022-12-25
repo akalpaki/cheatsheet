@@ -37,11 +37,11 @@ def test_edit_sheet(client):
 def test_create_sheet(client):
     data = json.dumps({
         'author': 'create_test',
-        'body': 'creating a test entry',
-        'created': 'now'
+        'title': 'test title',
+        'body': 'creating a test entry'
     })
     response = client.post(
-        '/',
+        '/cheat_sheet/',
         data=data,
         content_type='application/json'
     )
@@ -58,5 +58,3 @@ def test_delete_sheet(client):
         content_type='application/json'
     )
     assert response.status_code == 204
-
-

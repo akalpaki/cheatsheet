@@ -1,21 +1,19 @@
 import pytest
 from cheatsheet.__init__ import create_app
+import cheatsheet.db
 
 
 @pytest.fixture()
 def app():
-    app = create_app({
-        'TESTING': True,
-        #'DATABASE': db_path, add fake db on configtest later
-     })
+    app = create_app(current_config="testing")
 
     with app.app_context():
-        pass
+        cheatsheet.db.init_app(app)
 
     yield app
 
-    #os.close(db_fd)
-    #os.unlink(db_path)
+    # os.close(db_fd)
+    # os.unlink(db_path)
 
 
 @pytest.fixture()

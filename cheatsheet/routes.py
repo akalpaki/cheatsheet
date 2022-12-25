@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request
-
+from . import model
 '''
 This blueprint contains the routes for the REST API.
 General idea: Receive request > Strip data from request >
@@ -22,10 +22,11 @@ def create_sheet():
     """Creates a new cheat-sheet."""
     sheet_data = {
         "author": request.json.get("author"),
+        "title": request.json.get("title"),
         "body": request.json.get("body")
     }
-    # Call business func that feeds sheet_data to db
-    pass
+    a = model.CheatSheetManager.create(sheet_data["author"], sheet_data["title"], sheet_data["body"])
+    return a.to_json(), 201
 
 
 @api.route('/<int:sheet_id>/', methods=['GET'])
