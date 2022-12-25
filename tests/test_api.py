@@ -9,29 +9,28 @@ def test_get_one_sheet(client):
 
 
 def test_get_all_sheets(client):
-    response = client.get("/")
+    response = client.get("/cheat_sheet/")
     data = response.get_json()
     assert len(data) != 0
 
 
 def test_edit_sheet(client):
     data = json.dumps({
-        'id': 1,
+        'id': 9,
         'author': 'test',
-        'body': 'test123',
-        'created': 'now'
+        'title': 'updated title',
+        'body': 'test123'
     })
     response = client.put(
-        "/1/",
+        "/cheat_sheet/9/",
         data=data,
         content_type='application/json'
     )
     output = json.loads(response.get_data(as_text=True))
 
     assert response.status_code == 200
-    assert output['author'] == 'test'
+    assert output['title'] == 'updated title'
     assert output['body'] == 'test123'
-    assert output['created'] == 'now'
 
 
 def test_create_sheet(client):
@@ -52,9 +51,23 @@ def test_create_sheet(client):
 
 
 def test_delete_sheet(client):
-    # Find a way to assert that the object has actually been deleted.
-    response = client.delete(
-        "/1/",
+    temp_sheet = client.post(
+        '/cheat_sheet/',
+        data=json.dumps({
+            'author': 'Test',
+            'title': 'Deletion Test',
+            'body': 'I shouldnt exist'
+        }),
         content_type='application/json'
     )
-    assert response.status_code == 204
+    temp_sheet_id = temp_sheet.json.get('id')
+    deleted = client.delete(
+        f'/cheat_sheet/{temp_sheet_id}/',
+        content_type='application/json'
+    )
+    assert deleted.status_code == 204
+    a = client.get(
+        f'/cheat_sheet/{temp_sheet_id}/',
+        content_type='application/json'
+    )
+    assert a.status_code == 404

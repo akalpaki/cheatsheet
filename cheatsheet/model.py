@@ -14,15 +14,37 @@ class CheatSheet:
         return self.__dict__
 
 
-class CheatSheetManager:
+class Repo:
     """Class containing the tools to use CheatSheet."""
 
     @staticmethod
     def get(sheet_id):
         db = get_db()
-        query_result = db.execute("SELECT * FROM cheat_sheet WHERE id = (?)",
+        query_result = db.execute("SELECT * FROM cheat_sheet WHERE id = ?",
                                   (sheet_id,)).fetchone()
-        return query_result, 200
+        if query_result is not None:
+            a = CheatSheet(query_result["id"],
+                           query_result['author'],
+                           query_result['title'],
+                           query_result['body']
+                           )
+            return a
+        else:
+            return None
+
+    @staticmethod
+    def get_all():
+        query_array = []
+        db = get_db()
+        query_result = db.execute("SELECT * FROM cheat_sheet").fetchall()
+        for result in query_result:
+            query_array.append(CheatSheet(result["id"],
+                                          result["author"],
+                                          result["title"],
+                                          result["body"]
+                                          )
+                               )
+        return query_array
 
     @staticmethod
     def create(author, title, body):
@@ -38,17 +60,20 @@ class CheatSheetManager:
         data = CheatSheet(sheet_id, author, title, body)
         return data
 
-
     @staticmethod
-    def put(sheet_id, title, body):
+    def update(cheat_sheet):
         get_db().execute("UPDATE cheat_sheet SET title = ?, body = ?"
                          "WHERE id = ?",
-                         (title, body, sheet_id)
+                         (cheat_sheet.title, cheat_sheet.body, cheat_sheet.id)
         )
         get_db().commit()
-        return dict(id=sheet_id, message="Cheat-sheet updated!"), 200
+        outbound = Repo.get(sheet_id=cheat_sheet.id)
+        return outbound
 
     @staticmethod
     def delete(sheet_id):
-        get_db().execute("DELETE FROM cheat_sheet WHERE id = ?", (sheet_id,))
-        return dict(message="Cheat-sheet deleted."), 204
+        con = get_db()
+        d = con.execute("DELETE FROM cheat_sheet WHERE id = ?", (sheet_id,))
+        con.commit()
+
+        return d.rowcount > 0
