@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from cheatsheet.model import Repo, CheatSheet
+from cheatsheet.cs_model import CSRepo, CheatSheet
 '''
 This blueprint contains the routes for the REST API.
 General idea: Receive request > Strip data from request >
@@ -15,7 +15,7 @@ api = Blueprint('cheat_sheet', __name__, url_prefix='/cheat_sheet')
 def get_all():
     """Returns all cheat-sheets for the frontpage."""
     returning_array = []
-    a = Repo.get_all()
+    a = CSRepo.get_all()
     for sheet in a:
         returning_array.append(sheet.to_json())
     return returning_array, 200
@@ -29,14 +29,14 @@ def create_sheet():
         "title": request.json.get("title"),
         "body": request.json.get("body")
     }
-    a = Repo.create(sheet_data["author"], sheet_data["title"], sheet_data["body"])
+    a = CSRepo.create(sheet_data["author"], sheet_data["title"], sheet_data["body"])
     return a.to_json(), 201
 
 
 @api.route('/<int:sheet_id>/', methods=['GET'])
 def get_sheet(sheet_id):
     """Grabs a cheat-sheet from db."""
-    sheet = Repo.get(sheet_id=sheet_id)
+    sheet = CSRepo.get(sheet_id=sheet_id)
     if sheet:
         return sheet, 200
     else:
@@ -51,14 +51,14 @@ def update_sheet(sheet_id):
                              request.json.get("title"),
                              request.json.get("body")
                              )
-    a = Repo.update(update_data)
+    a = CSRepo.update(update_data)
     return a.to_json(), 200
 
 
 @api.route('/<int:sheet_id>/', methods=['DELETE'])
 def delete_sheet(sheet_id):
     """Deletes the cheat-sheet."""
-    deleted = Repo.delete(sheet_id=sheet_id)
+    deleted = CSRepo.delete(sheet_id=sheet_id)
     if deleted:
         return "None", 204
     else:

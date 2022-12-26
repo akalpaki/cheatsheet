@@ -14,7 +14,7 @@ class CheatSheet:
         return self.__dict__
 
 
-class Repo:
+class CSRepo:
     """Class containing the tools to use CheatSheet."""
 
     @staticmethod
@@ -67,13 +67,13 @@ class Repo:
                          (cheat_sheet.title, cheat_sheet.body, cheat_sheet.id)
         )
         get_db().commit()
-        outbound = Repo.get(sheet_id=cheat_sheet.id)
+        outbound = CSRepo.get(sheet_id=cheat_sheet.id)
         return outbound
 
     @staticmethod
     def delete(sheet_id):
-        con = get_db()
-        d = con.execute("DELETE FROM cheat_sheet WHERE id = ?", (sheet_id,))
-        con.commit()
+        db = get_db()
+        d = db.execute("DELETE FROM cheat_sheet WHERE id = ?", (sheet_id,))
+        db.commit()
 
         return d.rowcount > 0
