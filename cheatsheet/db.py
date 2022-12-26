@@ -36,7 +36,9 @@ def init_db():
 
 @click.command('init-db')
 def init_db_command():
-    """Clear existing data, create new tables."""
+    """Clear existing data, create new tables.
+    Useful when changing schema - you need to restart db with
+    schema updates."""
     init_db()
     click.echo('Database initialized.')
 

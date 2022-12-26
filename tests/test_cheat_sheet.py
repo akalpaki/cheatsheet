@@ -2,14 +2,14 @@ import json
 
 
 def test_get_one_sheet(client):
-    response = client.get("/1/")
+    response = client.get_one("/1/")
     data = response.get_json()
     assert response.status_code == 200
     assert data['output']['author'] == "Remis"
 
 
 def test_get_all_sheets(client):
-    response = client.get("/cheat_sheet/")
+    response = client.get_one("/cheat_sheet/")
     data = response.get_json()
     assert len(data) != 0
 
@@ -50,6 +50,25 @@ def test_create_sheet(client):
     assert len(output) != 0
 
 
+def test_create_with_tags(client):
+    data = json.dumps({
+        "author": "Tag",
+        "title": "Tag test",
+        "body": "Should be a tag in here.",
+        "tags": "Test"
+    })
+    response = client.post(
+        "/cheat_sheet/",
+        data=data,
+        content_type="application/json"
+    )
+    output = json.loads(response.get_data(as_text=True))
+    assert response.status_code == 201
+    assert len(output) > 0
+    assert output["author"] == "Tag"
+    assert output["tags"] == "Test"
+
+
 def test_delete_sheet(client):
     temp_sheet = client.post(
         '/cheat_sheet/',
@@ -60,14 +79,11 @@ def test_delete_sheet(client):
         }),
         content_type='application/json'
     )
-    temp_sheet_id = temp_sheet.json.get('id')
+    temp_sheet_id = temp_sheet.json.get_one('id')
     deleted = client.delete(
         f'/cheat_sheet/{temp_sheet_id}/',
         content_type='application/json'
     )
     assert deleted.status_code == 204
-    a = client.get(
-        f'/cheat_sheet/{temp_sheet_id}/',
-        content_type='application/json'
-    )
+    a = client.get_one(f'/cheat_sheet/{temp_sheet_id}/')
     assert a.status_code == 404

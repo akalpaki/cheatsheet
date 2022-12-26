@@ -27,16 +27,17 @@ def create_sheet():
     sheet_data = {
         "author": request.json.get("author"),
         "title": request.json.get("title"),
-        "body": request.json.get("body")
+        "body": request.json.get("body"),
+        "tags": request.json.get("tags")
     }
-    a = CSRepo.create(sheet_data["author"], sheet_data["title"], sheet_data["body"])
+    a = CSRepo.create(sheet_data["author"], sheet_data["title"], sheet_data["body"], sheet_data["tags"])
     return a.to_json(), 201
 
 
 @api.route('/<int:sheet_id>/', methods=['GET'])
 def get_sheet(sheet_id):
     """Grabs a cheat-sheet from db."""
-    sheet = CSRepo.get(sheet_id=sheet_id)
+    sheet = CSRepo.get_one(sheet_id=sheet_id)
     if sheet:
         return sheet, 200
     else:

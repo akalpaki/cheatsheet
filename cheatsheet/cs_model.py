@@ -4,11 +4,12 @@ from cheatsheet.db import get_db
 class CheatSheet:
     """The model class for cheat-sheets"""
 
-    def __init__(self, sheet_id, author, title, body):
+    def __init__(self, sheet_id, author, title, body, tags=None):
         self.id = sheet_id
         self.author = author
         self.title = title
         self.body = body
+        self.tags = tags
 
     def to_json(self):
         return self.__dict__
@@ -18,7 +19,7 @@ class CSRepo:
     """Class containing the tools to use CheatSheet."""
 
     @staticmethod
-    def get(sheet_id):
+    def get_one(sheet_id):
         db = get_db()
         query_result = db.execute("SELECT * FROM cheat_sheet WHERE id = ?",
                                   (sheet_id,)).fetchone()
@@ -47,7 +48,7 @@ class CSRepo:
         return query_array
 
     @staticmethod
-    def create(author, title, body):
+    def create(author, title, body, tags=None):
         db = get_db()
         curr = db.cursor()
         curr.execute(
@@ -57,7 +58,14 @@ class CSRepo:
         )
         db.commit()
         sheet_id = curr.lastrowid
-        data = CheatSheet(sheet_id, author, title, body)
+        if tags is not None:
+            curr.execute(
+                "UPDATE cheat_sheet SET tags = ?"
+                "WHERE id = ?",
+                (tags, sheet_id)
+            )
+
+        data = CheatSheet(sheet_id, author, title, body, tags)
         return data
 
     @staticmethod
@@ -67,7 +75,7 @@ class CSRepo:
                          (cheat_sheet.title, cheat_sheet.body, cheat_sheet.id)
         )
         get_db().commit()
-        outbound = CSRepo.get(sheet_id=cheat_sheet.id)
+        outbound = CSRepo.get_one(sheet_id=cheat_sheet.id)
         return outbound
 
     @staticmethod

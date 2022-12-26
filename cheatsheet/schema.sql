@@ -7,12 +7,12 @@ CREATE TABLE cheat_sheet (
     title TEXT NOT NULL,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     body TEXT NOT NULL,
-    tag TEXT NOT NULL
+    tags TEXT
 );
 
 
 CREATE TABLE tag (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    description TEXT NOT NULL
+    description TEXT
 );
