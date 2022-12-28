@@ -1,4 +1,5 @@
 import sqlite3
+import psycopg
 
 import click
 from flask import g, current_app
@@ -6,8 +7,14 @@ from flask import g, current_app
 # This is the database setup file.
 
 
-def get_db():
-    """Creates the database connection."""
+def get_db_pg():
+    """Connects to the postgres db"""
+    if 'db' not in g:
+        g.db = psycopg.connect("dbname= ")
+
+
+def get_db_lite():
+    """Connects to the sqlite db."""
     if 'db' not in g:
         g.db = sqlite3.connect(
             current_app.config['DATABASE'],
