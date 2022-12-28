@@ -12,9 +12,6 @@ def app():
 
     yield app
 
-    # os.close(db_fd)
-    # os.unlink(db_path)
-
 
 @pytest.fixture()
 def client(app):
